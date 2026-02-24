@@ -1,8 +1,8 @@
 PROJECT_ROOT:=$(abspath .)
 export PROJECT_ROOT
 
-TASK_NAME?=00_signext
-TB_NAME?=signext_tb
+TASK_NAME?=01_mux4
+TB_NAME?=mux4_tb
 DEFINES_RAW?=BEHAVIORAL
 
 TASK_DIR:=$(PROJECT_ROOT)/$(TASK_NAME)
@@ -44,4 +44,5 @@ clean_all: clean_dump clean_sim
 .PHONY: create_task_template
 create_task_template:
 	mkdir $(TASK_DIR) && mkdir $(SRC_DIR) \
-	&& mkdir $(TB_DIR) && touch $(RTL_LIST_FILE)
+	&& mkdir $(TB_DIR) && touch $(RTL_LIST_FILE) \
+	&& touch $(TB_FILE)
