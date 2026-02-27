@@ -2,6 +2,8 @@
 
 module mux4_tb;
 
+int random_seed;
+
 localparam WIDTH = 4;
 
 reg  [1:0] 		 i_sel;
@@ -15,19 +17,19 @@ bit all_ok = 1'b1;
 
 mux4 #(.WIDTH(WIDTH)) dut(.*);
 
-task error();
-    begin
-        $display("Error: i_sel=%b, i_0=%0x, i_1=%0x, i_2=%0x, i_3=%0x, o_out=%0x",
-                i_sel, i_0, i_1, i_2, i_3, o_out);
-        all_ok = 1'b0;
-    end
-endtask
+function void error();
+    $display("Error: i_sel=%b, i_0=%0x, i_1=%0x, i_2=%0x, i_3=%0x, o_out=%0x",
+            i_sel, i_0, i_1, i_2, i_3, o_out);
+    all_ok = 1'b0;
+endfunction
 
 initial begin
-    i_0 = $random;
-    i_1 = $random;
-    i_2 = $random;
-    i_3 = $random;
+    #5;
+
+    i_0 = $random(random_seed);
+    i_1 = $random(random_seed);
+    i_2 = $random(random_seed);
+    i_3 = $random(random_seed);
 
     #5;
     i_sel = 2'b00;
@@ -60,6 +62,11 @@ initial begin
 end
 
 initial begin
+    if (!$value$plusargs("RAND_SEED=%d", random_seed))
+        random_seed = 0;
+        
+    $display("Set random seed to %d", random_seed);
+
     $dumpvars;
     $display("[%0t] Start", $realtime);
 

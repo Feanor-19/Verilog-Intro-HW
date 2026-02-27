@@ -3,7 +3,8 @@ export PROJECT_ROOT
 
 TASK_NAME?=01_mux4
 TB_NAME?=mux4_tb
-DEFINES_RAW?=BEHAVIORAL
+DEFINES_RAW?=#BEHAVIORAL
+RAND_SEED?=42
 
 TASK_DIR:=$(PROJECT_ROOT)/$(TASK_NAME)
 export TASK_DIR
@@ -16,15 +17,16 @@ DUMP_FILE:=$(TASK_DIR)/dump.vcd
 SIM_FILE:=$(TASK_DIR)/sim
 
 DEFINES:=$(addprefix -D,$(DEFINES_RAW))
-OPTIONS:=-g2005-sv
+COMPILE_OPTIONS:=-g2005-sv
+RUN_OPTIONS:=+RAND_SEED=$(RAND_SEED)
 
 .PHONY: compile
 compile:
-	cd $(TASK_DIR) && iverilog $(OPTIONS) $(DEFINES) -f $(RTL_LIST_FILE) $(TB_FILE) -o $(SIM_FILE)
+	cd $(TASK_DIR) && iverilog $(COMPILE_OPTIONS) $(DEFINES) -f $(RTL_LIST_FILE) $(TB_FILE) -o $(SIM_FILE)
 
 .PHONY: run
 run:
-	cd $(TASK_DIR) && $(SIM_FILE)
+	cd $(TASK_DIR) && $(SIM_FILE) $(RUN_OPTIONS)
 
 .PHONY: show_waves
 show_waves:
