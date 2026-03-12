@@ -4,7 +4,7 @@ export PROJECT_ROOT
 TASK_NAME?=01_mux4
 TB_NAME?=mux4_tb
 DEFINES_RAW?=#BEHAVIORAL
-RAND_SEED?=42
+RAND_SEED?=19
 
 TASK_DIR:=$(PROJECT_ROOT)/$(TASK_NAME)
 export TASK_DIR
@@ -18,7 +18,13 @@ SIM_FILE:=$(TASK_DIR)/sim
 
 DEFINES:=$(addprefix -D,$(DEFINES_RAW))
 COMPILE_OPTIONS:=-g2005-sv
-RUN_OPTIONS:=+RAND_SEED=$(RAND_SEED)
+RUN_OPTIONS:= +RAND_SEED=$(RAND_SEED)
+
+VERILATOR_LINT_OPTS:= --lint-only --timing --sv --Wall --timescale 1ns/1ps --top $(TB_NAME)
+
+.PHONY: verilator_lint
+verilator_lint:
+	cd $(TASK_DIR) && verilator $(VERILATOR_LINT_OPTS) $(DEFINES) -f $(RTL_LIST_FILE) $(TB_FILE)
 
 .PHONY: compile
 compile:

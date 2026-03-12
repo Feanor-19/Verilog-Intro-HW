@@ -2,8 +2,6 @@
 
 module mux4_tb;
 
-int random_seed;
-
 localparam WIDTH = 4;
 
 reg  [1:0] 		 i_sel;
@@ -26,10 +24,10 @@ endfunction
 initial begin
     #5;
 
-    i_0 = $random(random_seed);
-    i_1 = $random(random_seed);
-    i_2 = $random(random_seed);
-    i_3 = $random(random_seed);
+    i_0 = WIDTH'($urandom());
+    i_1 = WIDTH'($urandom());
+    i_2 = WIDTH'($urandom());
+    i_3 = WIDTH'($urandom());
 
     #5;
     i_sel = 2'b00;
@@ -62,10 +60,13 @@ initial begin
 end
 
 initial begin
+    int random_seed;
+
     if (!$value$plusargs("RAND_SEED=%d", random_seed))
         random_seed = 0;
-        
+
     $display("Set random seed to %d", random_seed);
+    void'($urandom(random_seed));
 
     $dumpvars;
     $display("[%0t] Start", $realtime);
