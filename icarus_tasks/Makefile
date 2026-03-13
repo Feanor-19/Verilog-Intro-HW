@@ -1,8 +1,8 @@
 PROJECT_ROOT:=$(abspath .)
 export PROJECT_ROOT
 
-TASK_NAME?=01_mux4
-TB_NAME?=mux4_tb
+TASK_NAME?=01_alu
+TB_NAME?=alu_tb
 DEFINES_RAW?=#BEHAVIORAL
 RAND_SEED?=19
 
