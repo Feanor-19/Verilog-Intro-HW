@@ -1,8 +1,6 @@
 `ifndef DEFINES_VH
 `define DEFINES_VH
 
-`define DATA_WIDTH 32
-
 // {funct7[5], funct3}
 `define ALU_OP_WIDTH 4
 
