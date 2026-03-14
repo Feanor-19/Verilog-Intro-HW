@@ -1,7 +1,7 @@
 PROJECT_ROOT:=$(abspath .)
 export PROJECT_ROOT
 
-TASK_NAME?=alu
+TASK_NAME?=cmp
 TASK_NUM?=01
 
 TASK_FULL_NAME?=$(TASK_NUM)_$(TASK_NAME)
@@ -23,15 +23,18 @@ DEFINES:=$(addprefix -D,$(DEFINES_RAW))
 COMPILE_OPTIONS:=-g2005-sv
 RUN_OPTIONS:= +RAND_SEED=$(RAND_SEED)
 
+
 VERILATOR_LINT_OPTS:= --lint-only --timing --sv --Wall --timescale 1ns/1ps --top $(TB_NAME)
 
 .PHONY: verilator_lint
 verilator_lint:
-	cd $(TASK_DIR) && verilator $(VERILATOR_LINT_OPTS) $(DEFINES) -f $(RTL_LIST_FILE) $(TB_FILE)
+	cd $(TASK_DIR) && verilator $(VERILATOR_LINT_OPTS) $(DEFINES)\
+	-f $(RTL_LIST_FILE) $(TB_FILE)
 
 .PHONY: compile
 compile:
-	cd $(TASK_DIR) && iverilog $(COMPILE_OPTIONS) $(DEFINES) -f $(RTL_LIST_FILE) $(TB_FILE) -o $(SIM_FILE)
+	cd $(TASK_DIR) && iverilog $(COMPILE_OPTIONS) $(DEFINES)\
+	-f $(RTL_LIST_FILE) $(TB_FILE) -o $(SIM_FILE)
 
 .PHONY: run
 run:
