@@ -66,8 +66,10 @@ if __name__ == "__main__":
 
     N = int(sys.argv[1])
 
-    x_arr = generate_fp16_list(N)
-    y_arr = generate_fp16_list(N)
+    full = generate_fp16_list(2 * N)
+
+    x_arr = full[0::2]
+    y_arr = full[1::2]
 
     add_arr = np.array(
         [add_fp16_daz_ftz(x_arr[i], y_arr[i]) for i in range(N)],

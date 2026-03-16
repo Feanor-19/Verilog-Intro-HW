@@ -1,4 +1,4 @@
-N?=100000
+N?=500000
 
 SCRIPTS_DIR:=$(TASK_DIR)/scripts
 SCRIPT_PREP_TEST_DAT:=$(SCRIPTS_DIR)/prep_test_dat.py

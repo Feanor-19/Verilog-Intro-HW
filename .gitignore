@@ -2,3 +2,4 @@ sim
 *.vcd
 docs
 *.hex
+*.gtkw

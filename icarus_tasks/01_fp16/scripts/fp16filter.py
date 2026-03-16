@@ -9,6 +9,11 @@ def main():
         if not line:
             return 0
         
+        if 'x' in line:
+            sys.stdout.write(f"X\n")
+            sys.stdout.flush()
+            continue
+
         b = int(line, base=16).to_bytes(2, 'little')
         c = np.frombuffer(b, dtype=np.float16, count=1)
 

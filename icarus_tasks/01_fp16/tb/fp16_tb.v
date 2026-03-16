@@ -30,8 +30,7 @@ fp16mul fp16mul_inst (
     .o_res    (mul_act)
 );
 
-// TODO change to fp16add
-fp16mul fp16mul_inst2 (
+fp16add fp16add_inst (
     .i_a      (a),
     .i_b      (b),
     .o_res    (add_act)
@@ -54,10 +53,19 @@ always @(*) begin
     //     ok_add = (add_act_bexp == 5'h1F) && (add_act_mant == 10'b0) && (add_act_sign == add_ref_sign);
     // else if (add_ref_bexp == 5'h1F && add_ref_mant != 10'b0) // NaN
     //     ok_add = (add_act_bexp == 5'h1F) && (add_act_mant != 10'b0);
+    // else if (add_ref_bexp == 5'h01 && add_ref_mant == 10'b0) // the smallest normal (abs)
+    //     ok_add = (add_act_bexp == 5'h01 && add_act_mant == 10'b0)  // ok if the same
+    //           || (add_act_bexp == 5'h01 && add_act_mant == 10'h1)  // or 1 bit diff in mant
+    //           || (add_act_bexp == 5'b0  && add_act_mant == 10'b0); // or got denormal flushed to 0
     // else
-    //     ok_add = ($abs(diff_add) < 2) && (add_act_sign == add_ref_sign);
+    //     ok_add = (-2 < diff_add) && (diff_add < 2) && (add_act_sign == add_ref_sign);
 
-    ok_add = 1; // TODO
+    if (add_ref_bexp == 5'b0) // Zero/denormal (although the script does DAZ & FTZ also)
+        ok_add = (add_act_bexp == 5'h00) && (add_act_mant == 10'h0) && (add_act_sign == add_ref_sign);
+    else if (add_ref_bexp == 5'h1F && add_ref_mant != 10'b0) // NaN
+        ok_add = (add_act_bexp == 5'h1F) && (add_act_mant != 10'b0);
+    else
+        ok_add = (add_act == add_ref); 
 
     if (mul_ref_bexp == 5'b0) // Zero/denormal
         ok_mul = (mul_act_bexp == 5'h00) && (mul_act_mant == 10'h0) && (mul_act_sign == mul_ref_sign);
@@ -70,7 +78,7 @@ always @(*) begin
               || (mul_act_bexp == 5'h01 && mul_act_mant == 10'h1)  // or 1 bit diff in mant
               || (mul_act_bexp == 5'b0  && mul_act_mant == 10'b0); // or got denormal flushed to 0
     else
-        ok_mul = (-2 < diff_mul) && (diff_mul < 2) && (mul_act_sign == mul_ref_sign);    
+        ok_mul = (-2 < diff_mul) && (diff_mul < 2) && (mul_act_sign == mul_ref_sign);
 end
 
 always @(posedge clk) begin
@@ -90,7 +98,7 @@ end
 
 initial begin
     string TEST_DAT_FILE;
-    if ($value$plusargs("TEST_DAT_FILE=%s", TEST_DAT_FILE)) begin 
+    if ($value$plusargs("TEST_DAT_FILE=%s", TEST_DAT_FILE)) begin
         $display("TEST_DAT_FILE=%s", TEST_DAT_FILE);
     end else begin
         $display("ERROR: TEST_DAT_FILE not specified!");
