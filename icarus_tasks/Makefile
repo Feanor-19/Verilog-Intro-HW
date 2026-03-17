@@ -1,7 +1,7 @@
 PROJECT_ROOT:=$(abspath .)
 export PROJECT_ROOT
 
-TASK_NAME?=clkdiv
+TASK_NAME?=rf_2r1w
 TASK_NUM?=02
 
 TASK_FULL_NAME?=$(TASK_NUM)_$(TASK_NAME)
