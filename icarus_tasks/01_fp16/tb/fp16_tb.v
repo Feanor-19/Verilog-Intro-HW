@@ -43,34 +43,20 @@ reg ok_add, ok_mul, pass = 1;
 
 assign {a, b, add_ref, mul_ref} = test[idx];
 
-wire signed [14:0] diff_add = $signed(add_act[14:0]) - $signed(add_ref[14:0]);
-wire signed [14:0] diff_mul = $signed(mul_act[14:0]) - $signed(mul_ref[14:0]);
-
 always @(*) begin
-    // if (add_ref_bexp == 5'b0) // Zero/denormal
-    //     ok_add = (add_act_bexp == 5'h00) && (add_act_mant == 10'h0) && (add_act_sign == add_ref_sign);
-    // else if (add_ref_bexp == 5'h1F && add_ref_mant == 10'b0) // Inf
-    //     ok_add = (add_act_bexp == 5'h1F) && (add_act_mant == 10'b0) && (add_act_sign == add_ref_sign);
-    // else if (add_ref_bexp == 5'h1F && add_ref_mant != 10'b0) // NaN
-    //     ok_add = (add_act_bexp == 5'h1F) && (add_act_mant != 10'b0);
-    // else if (add_ref_bexp == 5'h01 && add_ref_mant == 10'b0) // the smallest normal (abs)
-    //     ok_add = (add_act_bexp == 5'h01 && add_act_mant == 10'b0)  // ok if the same
-    //           || (add_act_bexp == 5'h01 && add_act_mant == 10'h1)  // or 1 bit diff in mant
-    //           || (add_act_bexp == 5'b0  && add_act_mant == 10'b0); // or got denormal flushed to 0
-    // else
-    //     ok_add = (-2 < diff_add) && (diff_add < 2) && (add_act_sign == add_ref_sign);
-
     if (add_ref_bexp == 5'b0) // Zero/denormal (although the script does DAZ & FTZ also)
         ok_add = (add_act_bexp == 5'h00) && (add_act_mant == 10'h0) && (add_act_sign == add_ref_sign);
     else if (add_ref_bexp == 5'h1F && add_ref_mant != 10'b0) // NaN
         ok_add = (add_act_bexp == 5'h1F) && (add_act_mant != 10'b0);
+    else if (add_ref_bexp == 5'h01 && add_ref_mant == 10'b0) // the smallest normal (abs)
+        ok_add = (add_act_bexp == 5'h01 && add_act_mant == 10'b0)  // ok if the same
+              || (add_act_bexp == 5'h01 && add_act_mant == 10'h1)  // or 1 bit diff in mant
+              || (add_act_bexp == 5'b0  && add_act_mant == 10'b0); // or got denormal flushed to 0
     else
         ok_add = (add_act == add_ref); 
 
     if (mul_ref_bexp == 5'b0) // Zero/denormal
         ok_mul = (mul_act_bexp == 5'h00) && (mul_act_mant == 10'h0) && (mul_act_sign == mul_ref_sign);
-    else if (mul_ref_bexp == 5'h1F && mul_ref_mant == 10'b0) // Inf
-        ok_mul = (mul_act_bexp == 5'h1F) && (mul_act_mant == 10'b0) && (mul_act_sign == mul_ref_sign);
     else if (mul_ref_bexp == 5'h1F && mul_ref_mant != 10'b0) // NaN
         ok_mul = (mul_act_bexp == 5'h1F) && (mul_act_mant != 10'b0);
     else if (mul_ref_bexp == 5'h01 && mul_ref_mant == 10'b0) // the smallest normal (abs)
@@ -78,7 +64,7 @@ always @(*) begin
               || (mul_act_bexp == 5'h01 && mul_act_mant == 10'h1)  // or 1 bit diff in mant
               || (mul_act_bexp == 5'b0  && mul_act_mant == 10'b0); // or got denormal flushed to 0
     else
-        ok_mul = (-2 < diff_mul) && (diff_mul < 2) && (mul_act_sign == mul_ref_sign);
+        ok_mul = (mul_act == mul_ref);
 end
 
 always @(posedge clk) begin
@@ -106,7 +92,7 @@ initial begin
     end
 
     if($test$plusargs("RAND_SEED"))
-        $display("NOTE: RAND_SEED is not used in this tb.");
+        $display("NOTE: RAND_SEED is not used directly in this tb.");
 
     $display("Compiled with `TEST_SIZE=%0d", `TEST_SIZE);
 
