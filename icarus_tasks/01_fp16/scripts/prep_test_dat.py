@@ -62,7 +62,7 @@ def generate_fp16_list(N: int) -> NDArray[np.float16]:
 
 
 if __name__ == "__main__":
-    np.random.seed(0)
+    np.random.seed(int(sys.argv[2]))
 
     N = int(sys.argv[1])
 

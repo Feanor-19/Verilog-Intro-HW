@@ -51,8 +51,11 @@ reg [MANT_TMP_BITS-1:0] M_a;
 reg [MANT_TMP_BITS-1:0] M_b;
 reg [MANT_TMP_BITS-1:0] M_b_shifted;
 reg [MANT_TMP_BITS-1:0] M_res;
+reg [MANT_TMP_BITS-1:0] M_res2;
 reg [MANT_TMP_POS_BITS-1:0] lead1_pos;
 reg [BEXP_TMP_BITS-1:0] bexp_tmp;
+reg                     lead1_pos_vld;
+reg                     ready4lead1detect;
 
 reg [MANT_TMP_BITS-1:0] M_a_dbg1;
 reg [MANT_TMP_BITS-1:0] M_b_dbg1;
@@ -61,6 +64,10 @@ reg [MANT_TMP_BITS-1:0] M_res_dbg1;
 reg sign_res;
 reg [BEXP_BITS-1:0] bexp_res;
 reg [MANT_BITS-1:0] mant_res;
+
+reg sign_res2;
+reg [BEXP_BITS-1:0] bexp_res2;
+reg [MANT_BITS-1:0] mant_res2;
 
 // doesn't change NaNs and Infs
 function [FP16_BITS-1:0] daz(input [FP16_BITS-1:0] x);
@@ -97,22 +104,30 @@ function automatic bit is_zero(input [FP16_BITS-1:0] x);
     return 0;
 endfunction
 
-function automatic [MANT_TMP_POS_BITS-1:0] lead1detect(input [MANT_TMP_BITS-1:0] i_m);
-    reg [MANT_TMP_POS_BITS-1:0] o_pos;
-    bit vld = 1'b0;
+// function automatic [MANT_TMP_POS_BITS-1:0] lead1detect(input [MANT_TMP_BITS-1:0] i_m);
+//     reg [MANT_TMP_POS_BITS-1:0] o_pos;
+//     bit vld = 1'b0;
 
-    for (int i=MANT_TMP_BITS-1; i >= 0; i=i-1) begin
-        if (!vld && i_m[i]) begin
-            o_pos = MANT_TMP_POS_BITS'(i);
-            vld = 1'b1;
-        end
-    end
+//     for (int i=MANT_TMP_BITS-1; i >= 0; i=i-1) begin
+//         if (!vld && i_m[i]) begin
+//             o_pos = MANT_TMP_POS_BITS'(i);
+//             vld = 1'b1;
+//         end
+//     end
 
-    if (vld)
-        return o_pos;
+//     if (vld)
+//         return o_pos;
 
-    return 0;
-endfunction
+//     return 0;
+// endfunction
+
+lead1detect #(
+    .DATA_WIDTH(MANT_TMP_BITS)
+) lead1detect_inst (
+    .i_data (M_res),
+    .o_pos  (lead1_pos),
+    .o_vld  (lead1_pos_vld)
+);
 
 always @(*) begin
     a = i_a;
@@ -135,14 +150,17 @@ always @(*) begin
     M_b = '0;
     M_b_shifted = '0;
     M_res = '0;
-    bexp_tmp = '0;
     bexp_diff = '0;
+    bexp_tmp = '0;
     tmp = '0;
-    lead1_pos = '0;
+    ready4lead1detect = '0;
 
     M_a_dbg1 = '0;
     M_b_dbg1 = '0;
     M_res_dbg1 = '0;
+
+    bexp_res = '0;
+    mant_res = '0;
 
     if (is_nan(a) || is_nan(b)) begin
         sign_res = 1'b0;
@@ -206,47 +224,75 @@ always @(*) begin
 
         M_res_dbg1 = M_res;
 
-        lead1_pos = lead1detect(M_res);
+        ready4lead1detect = 1;
+    end
+end
 
-        if (lead1_pos == MANT_TMP_C_BIT) begin
-            // after ">> 1" old R bit will be in the place of S bit
-            // we need to shift and simultaneously update S bit:
-            // S_new = S_old | R_old   
-            M_res[MANT_TMP_R_BIT] |= M_res[MANT_TMP_S_BIT];
-            
-            M_res = M_res >> 1'b1;
-            bexp_tmp = BEXP_TMP_BITS'(bexp_a) + 1;
-        end else if (lead1_pos < MANT_TMP_BITS-2) begin
-            M_res = M_res << ((MANT_TMP_BITS-2) - lead1_pos);
-            bexp_tmp = BEXP_TMP_BITS'(bexp_a) - ((MANT_TMP_BITS-2) - BEXP_TMP_BITS'(lead1_pos));
-        end else begin
-            // M_res isn't changed
-            bexp_tmp = {{(BEXP_TMP_BITS-BEXP_BITS){1'b0}}, bexp_a};
-        end
+always @(*) begin
+     
+    M_res2 = '0;
+    bexp_tmp = '0;
 
-        if (M_res[MANT_TMP_G_BIT] 
-         & (M_res[MANT_TMP_R_BIT] | M_res[MANT_TMP_S_BIT] | M_res[MANT_TMP_OFFSET]))
-            M_res = M_res + MANT_TMP_BITS'({1'b1, {MANT_TMP_OFFSET{1'b0}}});
+    sign_res2 = '0;
+    bexp_res2 = '0;
+    mant_res2 = '0;
+    
+    if (ready4lead1detect) begin
+        M_res2 = M_res;
+        sign_res2 = sign_res;
 
-        if (M_res[MANT_TMP_C_BIT] == 1'b1) begin
-            M_res = M_res >> 1'b1;
-            bexp_tmp += 1;
-        end
+        if (lead1_pos_vld) begin
+            if (lead1_pos == MANT_TMP_C_BIT) begin
+                // after ">> 1" old R bit will be in the place of S bit
+                // we need to shift and simultaneously update S bit:
+                // S_new = S_old | R_old   
+                M_res2[MANT_TMP_R_BIT] |= M_res2[MANT_TMP_S_BIT];
+                
+                M_res2 = M_res2 >> 1'b1;
+                bexp_tmp = BEXP_TMP_BITS'(bexp_a) + 1;
+            end else if (lead1_pos < MANT_TMP_BITS-2) begin
+                M_res2 = M_res2 << ((MANT_TMP_BITS-2) - lead1_pos);
+                bexp_tmp = BEXP_TMP_BITS'(bexp_a) - ((MANT_TMP_BITS-2) - BEXP_TMP_BITS'(lead1_pos));
+            end else begin
+                // M_res2 isn't changed
+                bexp_tmp = {{(BEXP_TMP_BITS-BEXP_BITS){1'b0}}, bexp_a};
+            end
 
-        if (bexp_tmp[BEXP_TMP_UNDFL_BIT] == 1'b1) begin //underflow, bexp_tmp < 0
-            bexp_res = '0;
-            mant_res = '0; // zero
-        end else if (bexp_tmp[BEXP_TMP_OVRFL_BIT] == 1'b1
-                  || bexp_tmp[BEXP_BITS-1:0] == {BEXP_BITS{1'b1}}) begin //overflow
-            bexp_res = {BEXP_BITS{1'b1}};
-            mant_res = '0; // inf
-        end else begin
-            bexp_res = bexp_tmp[BEXP_BITS-1:0];
-            mant_res = M_res[MANT_BITS+MANT_TMP_OFFSET-1:MANT_TMP_OFFSET];
+            if (M_res2[MANT_TMP_G_BIT] 
+            & (M_res2[MANT_TMP_R_BIT] | M_res2[MANT_TMP_S_BIT] | M_res2[MANT_TMP_OFFSET]))
+                M_res2 = M_res2 + MANT_TMP_BITS'({1'b1, {MANT_TMP_OFFSET{1'b0}}});
+
+            if (M_res2[MANT_TMP_C_BIT] == 1'b1) begin
+                M_res2 = M_res2 >> 1'b1;
+                bexp_tmp += 1;
+            end
+
+            if (bexp_tmp[BEXP_TMP_UNDFL_BIT] == 1'b1) begin //underflow, bexp_tmp < 0
+                bexp_res2 = '0;
+                mant_res2 = '0; // zero
+            end else if (bexp_tmp[BEXP_TMP_OVRFL_BIT] == 1'b1
+                    || bexp_tmp[BEXP_BITS-1:0] == {BEXP_BITS{1'b1}}) begin //overflow
+                bexp_res2 = {BEXP_BITS{1'b1}};
+                mant_res2 = '0; // inf
+            end else begin
+                bexp_res2 = bexp_tmp[BEXP_BITS-1:0];
+                mant_res2 = M_res2[MANT_BITS+MANT_TMP_OFFSET-1:MANT_TMP_OFFSET];
+            end
+        end else begin 
+            //lead1pos not valid -> M_res2 == '0 -> the final result is zero
+            bexp_res2 = '0;
+            mant_res2 = '0;
+            sign_res2 = 0;
         end
     end
+end
 
-    o_res = {sign_res, bexp_res, mant_res};
+always @(*) begin
+    if (ready4lead1detect) begin
+        o_res = {sign_res2, bexp_res2, mant_res2};
+    end else begin
+        o_res = {sign_res, bexp_res, mant_res};
+    end
 
     o_res = daz(o_res); // FTZ
 end

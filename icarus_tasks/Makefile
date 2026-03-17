@@ -24,7 +24,7 @@ LOCAL_MK:=$(TASK_DIR)/local.mk
 COMPILE_OPTIONS:=-g2012
 RUN_OPTIONS:= +RAND_SEED=$(RAND_SEED)
 
-VERILATOR_LINT_OPTS:= --lint-only --timing --sv --timescale 1ns/1ps --top $(TB_NAME)
+VERILATOR_LINT_OPTS:= --lint-only --Wno-unoptflat --timing --sv --timescale 1ns/1ps --top $(TB_NAME)
 
 ifneq ($(wildcard $(LOCAL_MK)),)
 include $(LOCAL_MK)

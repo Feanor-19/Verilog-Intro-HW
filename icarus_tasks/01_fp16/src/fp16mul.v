@@ -1,4 +1,4 @@
-// DenormalAsZero, FlushToZero, roundTowardsZero
+// DenormalAsZero, FlushToZero, roundTiesToEven (an attempt)
 module fp16mul #(
     localparam FP16_BITS = 16
 ) (
