@@ -1,4 +1,4 @@
-// DenormalAsZero, FlushToZero, roundTiesToEven (an attempt)
+// DenormalAsZero, FlushToZero, roundTiesToEven (almost)
 module fp16mul #(
     localparam FP16_BITS = 16
 ) (
@@ -17,25 +17,17 @@ localparam BEXP_BEG = MANT_END + 1;
 localparam BEXP_END = BEXP_BEG + BEXP_BITS - 1;
 localparam SIGN_BIT = 15;
 
-// localparam MANT_TMP_OFFSET = 3; // three extra bits: G, R, S
+localparam MANTT_BITS = (MANT_BITS+1)*2;
+localparam MANTT_C_BIT = MANT_BITS+1;
 
-// localparam MANT_EFF_BITS = MANT_BITS + MANT_TMP_OFFSET; // mant + {G, R, S}
+localparam BEXPT_BITS = BEXP_BITS+1+1;
+localparam BEXPT_UNDFL_BIT = BEXPT_BITS-1;
+localparam BEXPT_OVRFL_BIT = BEXPT_BITS-2;
 
-localparam MANT_TMP_BITS = (MANT_BITS+1)*2;
-// localparam MANT_TMP_G_BIT = 2;
-// localparam MANT_TMP_R_BIT = 1;
-// localparam MANT_TMP_S_BIT = 0;
-localparam MANT_TMP_C_BIT = MANT_BITS+1;
+localparam [BEXPT_BITS-1:0] BIAS_EXP = BEXPT_BITS'('b01111);
 
-
-localparam BEXP_TMP_BITS = BEXP_BITS+1+1;
-localparam BEXP_TMP_UNDFL_BIT = BEXP_TMP_BITS-1;
-localparam BEXP_TMP_OVRFL_BIT = BEXP_TMP_BITS-2;
-
-localparam [BEXP_TMP_BITS-1:0] BIAS_EXP = BEXP_TMP_BITS'('b01111);
-
-localparam [MANT_TMP_BITS-1:0] EXP_OFF_TRESHOLD1 = 1 << (2*MANT_BITS+1);
-localparam [MANT_TMP_BITS-1:0] EXP_OFF_TRESHOLD0 = 1 << (2*MANT_BITS+0);
+localparam [MANTT_BITS-1:0] EXP_OFF_TRESHOLD1 = 1 << (2*MANT_BITS+1);
+localparam [MANTT_BITS-1:0] EXP_OFF_TRESHOLD0 = 1 << (2*MANT_BITS+0);
 
 reg [FP16_BITS-1:0] a;
 reg [FP16_BITS-1:0] b;
@@ -48,17 +40,17 @@ reg [MANT_BITS-1:0] mant_b;
 reg [BEXP_BITS-1:0] bexp_b;
 reg                 sign_b;
 
-reg [MANT_TMP_BITS-1:0] mant_tmp;
-reg [MANT_TMP_BITS-1:0] M_res;
-reg [BEXP_TMP_BITS-1:0] bexp_tmp;
+reg [MANTT_BITS-1:0] mantt1;
+reg [MANTT_BITS-1:0] mantt2;
+reg [BEXPT_BITS-1:0] bexpt;
 
-reg G;
-reg R;
-reg S;
+reg RND_G;
+reg RND_R;
+reg RND_S;
 
-reg [MANT_TMP_BITS-1:0] mant_tmp_dbg;
-reg [BEXP_TMP_BITS-1:0] bexp_tmp_dbg;
-reg [MANT_TMP_BITS-1:0] M_res_dbg1;
+reg [MANTT_BITS-1:0] mantt1_dbg;
+reg [BEXPT_BITS-1:0] bexpt_dbg;
+reg [MANTT_BITS-1:0] mantt2_dbg1;
 
 reg sign_res;
 reg [BEXP_BITS-1:0] bexp_res;
@@ -116,16 +108,16 @@ always @(*) begin
     bexp_b = b[BEXP_END:BEXP_BEG];
     sign_b = b[SIGN_BIT];
 
-    bexp_tmp = '0;
-    mant_tmp = '0;
-    M_res = '0;
-    G = '0;
-    R = '0;
-    S = '0;
+    bexpt = '0;
+    mantt1 = '0;
+    mantt2 = '0;
+    RND_G = '0;
+    RND_R = '0;
+    RND_S = '0;
 
-    bexp_tmp_dbg = '0;
-    mant_tmp_dbg = '0;
-    M_res_dbg1 = '0;
+    bexpt_dbg = '0;
+    mantt1_dbg = '0;
+    mantt2_dbg1 = '0;
 
     if (is_nan(a) || is_nan(b)) begin
         bexp_res = {BEXP_BITS{1'b1}};
@@ -141,57 +133,57 @@ always @(*) begin
         mant_res = '0; // inf
     end else begin
         // no denormals or nans at this point
-        bexp_tmp = BEXP_TMP_BITS'(bexp_a) + BEXP_TMP_BITS'(bexp_b) - BIAS_EXP;
-        mant_tmp = {1'b1, mant_a} * {1'b1, mant_b};
+        bexpt = BEXPT_BITS'(bexp_a) + BEXPT_BITS'(bexp_b) - BIAS_EXP;
+        mantt1 = {1'b1, mant_a} * {1'b1, mant_b};
         
-        bexp_tmp_dbg = bexp_tmp;
-        mant_tmp_dbg = mant_tmp;
+        bexpt_dbg = bexpt;
+        mantt1_dbg = mantt1;
 
-        if (mant_tmp < EXP_OFF_TRESHOLD1) begin
-            G = mant_tmp[MANT_BITS-1];
-            R = mant_tmp[MANT_BITS-2];
-            S = |mant_tmp[MANT_BITS-3:0];
-            mant_tmp -= EXP_OFF_TRESHOLD0;
+        if (mantt1 < EXP_OFF_TRESHOLD1) begin
+            RND_G = mantt1[MANT_BITS-1];
+            RND_R = mantt1[MANT_BITS-2];
+            RND_S = |mantt1[MANT_BITS-3:0];
+            mantt1 -= EXP_OFF_TRESHOLD0;
 
-            M_res = mant_tmp >> (MANT_BITS+0);
+            mantt2 = mantt1 >> (MANT_BITS+0);
 
-            bexp_tmp = bexp_tmp;
+            bexpt = bexpt;
         end else begin
-            G = mant_tmp[MANT_BITS];
-            R = mant_tmp[MANT_BITS-1];
-            S = |mant_tmp[MANT_BITS-2:0];
-            mant_tmp -= EXP_OFF_TRESHOLD1;
+            RND_G = mantt1[MANT_BITS];
+            RND_R = mantt1[MANT_BITS-1];
+            RND_S = |mantt1[MANT_BITS-2:0];
+            mantt1 -= EXP_OFF_TRESHOLD1;
 
-            M_res = mant_tmp >> (MANT_BITS+1);            
+            mantt2 = mantt1 >> (MANT_BITS+1);            
 
-            bexp_tmp = bexp_tmp+1;
+            bexpt = bexpt+1;
         end
 
-        M_res_dbg1 = M_res;
+        mantt2_dbg1 = mantt2;
 
-        M_res += 1 << MANT_BITS;
+        mantt2 += 1 << MANT_BITS;
 
-        if (G & (R | S | M_res[0]))
-            M_res += 1;
+        if (RND_G & (RND_R | RND_S | mantt2[0]))
+            mantt2 += 1;
 
-        if (M_res[MANT_TMP_C_BIT] == 1'b1) begin
-            M_res = M_res >> 1'b1;
-            bexp_tmp += 1;
+        if (mantt2[MANTT_C_BIT] == 1'b1) begin
+            mantt2 = mantt2 >> 1'b1;
+            bexpt += 1;
         end
 
-        if (bexp_tmp[BEXP_TMP_UNDFL_BIT] == 1'b1) begin
+        if (bexpt[BEXPT_UNDFL_BIT] == 1'b1) begin
             // underflow, res is zero
-            M_res = '0;
-            bexp_tmp = '0;
-        end else if (bexp_tmp[BEXP_TMP_OVRFL_BIT] == 1'b1
-                  || bexp_tmp[BEXP_BITS-1:0] == {BEXP_BITS{1'b1}}) begin
+            mantt2 = '0;
+            bexpt = '0;
+        end else if (bexpt[BEXPT_OVRFL_BIT] == 1'b1
+                  || bexpt[BEXP_BITS-1:0] == {BEXP_BITS{1'b1}}) begin
             // overflow, res is inf
-            M_res = '0;
-            bexp_tmp = BEXP_TMP_BITS'({BEXP_BITS{1'b1}});
+            mantt2 = '0;
+            bexpt = BEXPT_BITS'({BEXP_BITS{1'b1}});
         end
 
-        mant_res = M_res[MANT_BITS-1:0];
-        bexp_res = bexp_tmp[BEXP_BITS-1:0];
+        mant_res = mantt2[MANT_BITS-1:0];
+        bexp_res = bexpt[BEXP_BITS-1:0];
     end
 
     sign_res = sign_a ^ sign_b;
