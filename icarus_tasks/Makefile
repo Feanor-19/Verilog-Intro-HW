@@ -1,7 +1,7 @@
 PROJECT_ROOT:=$(abspath .)
 export PROJECT_ROOT
 
-TASK_NAME?=shiftreg
+TASK_NAME?=lfsr
 TASK_NUM?=02
 
 TASK_FULL_NAME?=$(TASK_NUM)_$(TASK_NAME)
