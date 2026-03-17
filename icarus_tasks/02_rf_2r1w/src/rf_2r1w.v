@@ -25,10 +25,9 @@ assign o_rd2_data = r[i_rd2_addr];
 always @(posedge clk, negedge rst_n) begin
     if (!rst_n) begin
         for (int i = 0; i < REG_NUM; i++) begin
-            r[i] = '0;
+            r[i] <= '0;
         end
-    end
-    if (i_wr_en) begin
+    end else if (i_wr_en) begin
         r[i_wr_addr] <= i_wr_data;
     end
 end
