@@ -26,8 +26,8 @@ localparam BEXPT_OVRFL_BIT = BEXPT_BITS-2;
 
 localparam [BEXPT_BITS-1:0] BIAS_EXP = BEXPT_BITS'('b01111);
 
-localparam [MANTT_BITS-1:0] EXP_OFF_TRESHOLD1 = 1 << (2*MANT_BITS+1);
-localparam [MANTT_BITS-1:0] EXP_OFF_TRESHOLD0 = 1 << (2*MANT_BITS+0);
+localparam [MANTT_BITS-1:0] EXP_OFF_THRESHOLD1 = 1 << (2*MANT_BITS+1);
+localparam [MANTT_BITS-1:0] EXP_OFF_THRESHOLD0 = 1 << (2*MANT_BITS+0);
 
 reg [FP16_BITS-1:0] a;
 reg [FP16_BITS-1:0] b;
@@ -139,11 +139,11 @@ always @(*) begin
         bexpt_dbg = bexpt;
         mantt1_dbg = mantt1;
 
-        if (mantt1 < EXP_OFF_TRESHOLD1) begin
+        if (mantt1 < EXP_OFF_THRESHOLD1) begin
             RND_G = mantt1[MANT_BITS-1];
             RND_R = mantt1[MANT_BITS-2];
             RND_S = |mantt1[MANT_BITS-3:0];
-            mantt1 -= EXP_OFF_TRESHOLD0;
+            mantt1 -= EXP_OFF_THRESHOLD0;
 
             mantt2 = mantt1 >> (MANT_BITS+0);
 
@@ -152,7 +152,7 @@ always @(*) begin
             RND_G = mantt1[MANT_BITS];
             RND_R = mantt1[MANT_BITS-1];
             RND_S = |mantt1[MANT_BITS-2:0];
-            mantt1 -= EXP_OFF_TRESHOLD1;
+            mantt1 -= EXP_OFF_THRESHOLD1;
 
             mantt2 = mantt1 >> (MANT_BITS+1);            
 
