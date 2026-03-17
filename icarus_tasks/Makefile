@@ -1,7 +1,7 @@
 PROJECT_ROOT:=$(abspath .)
 export PROJECT_ROOT
 
-TASK_NAME?=rf_2r1w
+TASK_NAME?=shiftreg
 TASK_NUM?=02
 
 TASK_FULL_NAME?=$(TASK_NUM)_$(TASK_NAME)
@@ -24,7 +24,8 @@ LOCAL_MK:=$(TASK_DIR)/local.mk
 COMPILE_OPTIONS:=-g2012
 RUN_OPTIONS:= +RAND_SEED=$(RAND_SEED)
 
-VERILATOR_LINT_OPTS:= --lint-only --Wno-unoptflat --timing --sv --timescale 1ns/1ps --top $(TB_NAME)
+VERILATOR_LINT_OPTS:= --lint-only --Wall --Wno-unoptflat --Wno-procassinit\
+					  --timing --sv --timescale 1ns/1ps --top $(TB_NAME)
 
 ifneq ($(wildcard $(LOCAL_MK)),)
 include $(LOCAL_MK)
