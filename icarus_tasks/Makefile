@@ -1,7 +1,7 @@
 PROJECT_ROOT:=$(abspath .)
 export PROJECT_ROOT
 
-TASK_NAME?=lfsr
+TASK_NAME?=fifo
 TASK_NUM?=02
 
 TASK_FULL_NAME?=$(TASK_NUM)_$(TASK_NAME)
@@ -54,11 +54,11 @@ show_waves:
 
 .PHONY: clean_dump
 clean_dump:
-	rm -f $(DUMP_FILE)
+	rm -f $(wildcard $(PROJECT_ROOT)/**/dump.vcd)
 
 .PHONY: clean_sim
 clean_sim:
-	rm -f $(SIM_FILE)
+	rm -f $(wildcard $(PROJECT_ROOT)/**/sim)
 
 .PHONY: clean_all
 clean_all: clean_dump clean_sim
