@@ -3,3 +3,7 @@ sim
 docs
 *.hex
 *.gtkw
+db
+incremental_db
+output
+simulation

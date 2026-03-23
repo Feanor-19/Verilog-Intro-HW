@@ -5,8 +5,8 @@ module signext_tb;
 localparam N = 5;
 localparam M = 16;
 
-reg [N-1:0] i_x = {1'b1, {(N-1){1'b0}}};
-wire [M-1:0] o_y;
+reg signed [N-1:0] i_x = {1'b1, {(N-1){1'b0}}};
+wire signed [M-1:0] o_y;
 bit all_ok = 1'b1;
 
 signext #(
@@ -17,7 +17,7 @@ signext #(
 initial forever begin
     #5;
 
-    if (signed'(o_y) != signed'(i_x)) begin
+    if (o_y != M'(i_x)) begin
         $display("FAIL: i_x=%b, o_y=%b, (int)(i_x)=%d, (int)(o_y)=%d",
                         i_x, o_y, signed'(i_x), signed'(o_y));
         all_ok = 1'b0;

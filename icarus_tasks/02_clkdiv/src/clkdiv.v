@@ -16,7 +16,7 @@ localparam CNT_WIDTH = $clog2(THRESHOLD+INCREMENT);
 reg [CNT_WIDTH-1:0] cnt;
 
 generate 
-if (4*F_OUT >= F_INP) begin
+if (4*F_OUT >= F_INP) begin: gen_small_fraction
     always @(posedge clk, negedge rst_n) begin
         if (!rst_n) begin
             cnt <= 0;
@@ -31,7 +31,7 @@ if (4*F_OUT >= F_INP) begin
             end
         end
     end
-end else begin
+end else begin: gen_ok_fraction
     always @(posedge clk, negedge rst_n) begin
         if (!rst_n) begin
             cnt <= 0;
