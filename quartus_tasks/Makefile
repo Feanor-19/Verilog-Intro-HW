@@ -1,7 +1,7 @@
 PROJECT_ROOT:=$(abspath .)
 export PROJECT_ROOT
 
-TASK_NAME?=blink
+TASK_NAME?=blink_pll
 TASK_NUM?=ex
 
 TASK_FULL_NAME?=$(TASK_NUM)_$(TASK_NAME)

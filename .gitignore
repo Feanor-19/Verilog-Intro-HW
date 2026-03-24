@@ -9,3 +9,6 @@ docs
 !fpga.qpf
 !fpga.qsf
 !fpga.sdc
+!pll.qip
+!pll.ppf
+!pll.v
