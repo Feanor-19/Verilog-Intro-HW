@@ -3,7 +3,9 @@ sim
 docs
 *.hex
 *.gtkw
-db
-incremental_db
-output
-simulation
+
+**/quartus_files/**
+!fpga_top.v
+!fpga.qpf
+!fpga.qsf
+!fpga.sdc

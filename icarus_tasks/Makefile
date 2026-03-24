@@ -84,5 +84,4 @@ clean_all: clean_dump clean_sim
 .PHONY: create_task_template
 create_task_template:
 	mkdir $(TASK_DIR) && mkdir $(SRC_DIR) \
-	&& mkdir $(TB_DIR) && touch $(RTL_LIST_FILE) \
-	&& touch $(TB_FILE)
+	&& mkdir $(TB_DIR) && touch $(TB_FILE)
