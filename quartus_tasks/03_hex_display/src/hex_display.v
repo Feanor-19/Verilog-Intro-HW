@@ -1,12 +1,12 @@
 module hex_display #(
   parameter CNT_WIDTH = 14
 )(
-  input  wire       clk,
-  input  wire       rst_n,
-  input  wire [15:0] i_data,
-  input  wire       i_rdy,
-  output wire [3:0] o_anodes,
-  output reg  [7:0] o_segments
+  input  wire         clk,
+  input  wire         rst_n,
+  input  wire [15:0]  i_data,
+  input  wire         i_rdy,
+  output wire [3:0]   o_anodes,
+  output reg  [7:0]   o_segments
 );
 
 reg [CNT_WIDTH-1:0] cnt;
