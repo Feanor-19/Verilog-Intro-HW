@@ -20,7 +20,7 @@ assign o_stcp = (pos == 4'd12) && cnt[0];
 assign o_shcp = (pos <= 4'd11) && cnt[0];
 assign o_ds = data[pos];
 assign o_oe = ~rst_n;
-assign o_done = &cnt;
+assign o_done = (pos == 4'd13) && cnt[0];
 
 always @(posedge clk or negedge rst_n) begin
     if (!rst_n)
