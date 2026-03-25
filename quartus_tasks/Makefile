@@ -1,7 +1,7 @@
 PROJECT_ROOT:=$(abspath .)
 export PROJECT_ROOT
 
-TASK_NAME?=rnd_hex
+TASK_NAME?=timer
 TASK_NUM?=03
 
 TASK_FULL_NAME?=$(TASK_NUM)_$(TASK_NAME)
