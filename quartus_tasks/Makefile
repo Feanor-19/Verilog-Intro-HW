@@ -1,11 +1,11 @@
 PROJECT_ROOT:=$(abspath .)
 export PROJECT_ROOT
 
-TASK_NAME?=blink_pll
+TASK_NAME?=bin_display
 TASK_NUM?=ex
 
 TASK_FULL_NAME?=$(TASK_NUM)_$(TASK_NAME)
-TB_NAME?=$(TASK_NAME)_tb
+TB_NAME?=top_tb
 DEFINES_RAW?=
 RAND_SEED?=25
 
@@ -105,7 +105,15 @@ quartus_pgm:
 
 .PHONY: show_waves
 show_waves:
-	gtkwave $(DUMP_FILE)
+	gtkwave $(DUMP_FILE) &
+
+# OTHER
+
+.PHONY: create_task_template
+create_task_template:
+	mkdir $(TASK_DIR) $(SRC_DIR) $(INC_DIR) \
+	&& mkdir $(TB_DIR) && touch $(TB_FILE) \
+	&& mkdir $(QUARTUS_FILES_DIR) && touch $(FPGA_TOP_FILE)
 
 # CLEAN
 
