@@ -1,8 +1,8 @@
 PROJECT_ROOT:=$(abspath .)
 export PROJECT_ROOT
 
-TASK_NAME?=timer
-TASK_NUM?=03
+TASK_NAME?=uart_rx
+TASK_NUM?=04
 
 TASK_FULL_NAME?=$(TASK_NUM)_$(TASK_NAME)
 TB_NAME?=top_tb
