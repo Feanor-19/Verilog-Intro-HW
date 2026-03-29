@@ -6,9 +6,9 @@ module timer #(
 
     parameter TMR_VAL_WIDTH = $clog2(MAX_VAL)
 ) (
-    input  wire                    clk,
-    input  wire                    rst_n,
-    output reg [TMR_VAL_WIDTH-1:0] o_timer_val
+    input  wire                     clk,
+    input  wire                     rst_n,
+    output wire [TMR_VAL_WIDTH-1:0] o_timer_val
 );
 
 localparam CNT_THRESHOLD = F_CLOCK;
@@ -37,7 +37,7 @@ end
 
 always @(posedge clk, negedge rst_n) begin
     if (!rst_n) begin
-        tmr <= TMR_VAL_WIDTH'(MAX_VAL);
+        tmr <= MAX_VAL;
     end else begin
         if (tmr_en & tmr != {TMR_VAL_WIDTH{1'b0}}) begin
             tmr <= tmr - 1'b1;

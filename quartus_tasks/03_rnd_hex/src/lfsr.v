@@ -11,7 +11,6 @@ module lfsr #(
 );
 
 reg [WIDTH-1:0] r;
-
 reg bit_inp;
 
 assign o_reg = r; 
@@ -26,11 +25,12 @@ always @(posedge clk, negedge rst_n) begin
 end
 
 always @(*) begin
+    integer i;
     bit_inp = 1'b1;
 
-    for (int i = 0; i < WIDTH-1; i++) begin
+    for (i = 0; i < WIDTH-1; i=i+1) begin
         if (P[i])
-            bit_inp ^= r[i];
+            bit_inp = bit_inp ^ r[i];
     end
 end
 

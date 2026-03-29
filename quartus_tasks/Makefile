@@ -44,7 +44,7 @@ endif
 # ---- ICARUS RUN OPTIONS ----
 # ============================
 
-COMPILE_OPTIONS:=-g2012 $(INCDIR_BASIC_OPT)
+COMPILE_OPTIONS:=-g2005-sv $(INCDIR_BASIC_OPT)
 RUN_OPTIONS:= +RAND_SEED=$(RAND_SEED)
 
 # ===========================
