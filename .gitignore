@@ -3,6 +3,7 @@ sim
 docs
 *.hex
 *.gtkw
+out_prog
 
 **/quartus_files/**
 !fpga_top.v

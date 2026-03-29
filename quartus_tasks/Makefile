@@ -1,11 +1,11 @@
 PROJECT_ROOT:=$(abspath .)
 export PROJECT_ROOT
 
-TASK_NAME?=uart_rx
-TASK_NUM?=04
+TASK_NAME?=cpu
+TASK_NUM?=05
 
 TASK_FULL_NAME?=$(TASK_NUM)_$(TASK_NAME)
-TB_NAME?=top_tb
+TB_NAME?=system_top_tb
 DEFINES_RAW?=
 RAND_SEED?=25
 
