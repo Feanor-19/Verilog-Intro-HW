@@ -64,7 +64,7 @@ always @(*) begin
         `LSU_SIZE_WORD: 
         begin 
             o_mask = 4'b1111;
-            o_core_data = i_mem_data;
+            o_core_data = from_mem_word;
             o_mem_data = i_core_data;
         end
         default: 

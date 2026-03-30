@@ -1,7 +1,8 @@
 module rf_2r1w #(
     parameter DATA_WIDTH  = 32,
     parameter REG_NUM     = 32,
-    localparam ADDR_WIDTH = $clog2(REG_NUM)
+    
+    parameter ADDR_WIDTH = $clog2(REG_NUM)
 ) (
     input  wire                   clk,
     input  wire                   rst_n,
@@ -23,9 +24,10 @@ assign o_rd1_data = (i_rd1_addr != 0) ? r[i_rd1_addr] : 32'h0;
 assign o_rd2_data = (i_rd2_addr != 0) ? r[i_rd2_addr] : 32'h0;
 
 always @(posedge clk, negedge rst_n) begin
+    integer i;
     if (!rst_n) begin
-        for (int i = 0; i < REG_NUM; i++) begin
-            r[i] <= '0;
+        for (i = 0; i < REG_NUM; i=i+1) begin
+            r[i] <= {DATA_WIDTH{1'b0}};
         end
     end else if (i_wr_en) begin
         r[i_wr_addr] <= i_wr_data;

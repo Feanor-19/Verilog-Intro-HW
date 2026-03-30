@@ -4,6 +4,7 @@ docs
 *.hex
 *.gtkw
 out_prog
+*.bak
 
 **/quartus_files/**
 !fpga_top.v

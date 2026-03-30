@@ -2,9 +2,13 @@
 `define CONFIG_VH
 
 // SYSTEM CONFIG
+`ifdef __ICARUS__
+`define IMEM_FILE_TXT   "out_prog/fib.txt"
+`else // Quartus
+`define IMEM_FILE_TXT   "../out_prog/fib_fpga.txt"
+`endif
 
-`define IMEM_FILE_TXT   "out_prog/fibc.txt"
-`define IMEM_ADDR_WIDTH 6
+`define IMEM_ADDR_WIDTH 5
 `define DMEM_ADDR_WIDTH 5
 `define XBAR_MMIO_START 30'h0000
 `define XBAR_MMIO_LIMIT 30'h03FF

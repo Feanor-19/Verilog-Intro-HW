@@ -19,7 +19,7 @@ always @(*) begin
         `CMP_OP_BLTU: o_taken = ($unsigned(i_a) <  $unsigned(i_b));
         `CMP_OP_BGEU: o_taken = ($unsigned(i_a) >= $unsigned(i_b));
     default:
-        o_taken = 'x;
+        o_taken = 1'bx;
     endcase
 end
 

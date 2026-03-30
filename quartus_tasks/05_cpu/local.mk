@@ -1,6 +1,6 @@
 #[asm/c]
-PROG_TYPE?=c
-PROG_NAME?=fibc
+PROG_TYPE?=asm
+PROG_NAME?=fib_fpga
 
 # ---------------------------------
 
