@@ -1,5 +1,3 @@
-// TODO СИНХРОНИЗАТОР ДЛЯ RXD
-
 module fpga_top(
     input  wire CLK,
     input  wire RSTN,
