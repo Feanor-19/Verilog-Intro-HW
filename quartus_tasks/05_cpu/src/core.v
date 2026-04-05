@@ -125,7 +125,6 @@ assign branch_taken = instr_jump | (instr_branch & cmp_res);
 
 rf_2r1w #(.DATA_WIDTH(32), .REG_NUM(32)) rf_2r1w_inst (
     .clk        (clk),
-    .rst_n      (rst_n),
 
     .i_rd1_addr (rs1),
     .o_rd1_data (src_reg1),

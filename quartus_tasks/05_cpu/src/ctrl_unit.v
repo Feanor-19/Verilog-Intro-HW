@@ -20,15 +20,16 @@ module ctrl_unit (
 );
 
 always @(*) begin
-    o_alu_sel1  = 0;
-    o_alu_sel2  = 0;
-    o_wrb_sel   = 0;
-    o_alu_op    = 0;
-    o_cmp_op    = 0;
+    o_alu_sel1  = {`ALU_SEL1_WIDTH{1'bx}};
+    o_alu_sel2  = {`ALU_SEL2_WIDTH{1'bx}};
+    o_wrb_sel   = {`WRB_SEL_WIDTH{1'bx}};
+    o_alu_op    = {`ALU_OP_WIDTH{1'bx}};
+    o_cmp_op    = {`CMP_OP_WIDTH{1'bx}};
+    o_lsu_size  = {`LSU_SIZE_WIDTH{1'bx}};
+    
     o_branch    = 0;
     o_jump      = 0;
     o_lsu_wren  = 0;
-    o_lsu_size  = 0;
 
     o_rf_wren   = 1'b1;
 
