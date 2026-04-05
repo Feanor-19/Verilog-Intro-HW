@@ -73,6 +73,8 @@ mem_xbar #(
     .MMIO_START    (`XBAR_MMIO_START),
     .MMIO_LIMIT    (`XBAR_MMIO_LIMIT)
 ) mem_xbar (
+    .clk           (clk),
+
     .i_addr        (core2xbar_addr),
     .i_data        (core2xbar_data),
     .i_wren        (core2xbar_wren),

@@ -1,7 +1,7 @@
 #[asm/c]
 PROG_TYPE?=asm
 
-PROG_NAME?=fib_fpga
+PROG_NAME?=mem
 
 IMEM_WORDS_CNT?=256
 # ---------------------------------
