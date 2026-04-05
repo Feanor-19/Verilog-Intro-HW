@@ -3,9 +3,9 @@
 
 // SYSTEM CONFIG
 `ifdef __ICARUS__
-`define IMEM_FILE_TXT   "out_prog/fib.txt"
+`define IMEM_FILE_TXT   "out_prog/mem.txt"
 `else // Quartus
-`define IMEM_FILE_TXT   "../out_prog/fib_fpga.txt"
+`define IMEM_FILE_TXT   "../out_prog/mem.txt"
 `endif
 
 `define IMEM_ADDR_WIDTH 5
