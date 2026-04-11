@@ -1,11 +1,11 @@
 PROJECT_ROOT:=$(abspath .)
 export PROJECT_ROOT
 
-TASK_NAME?=cpu
-TASK_NUM?=06
+TASK_NAME?=fp16pipe
+TASK_NUM?=07
 
 TASK_FULL_NAME?=$(TASK_NUM)_$(TASK_NAME)
-TB_NAME?=system_top_tb
+TB_NAME?=fp16add_pipe_tb
 DEFINES_RAW?=
 RAND_SEED?=25
 
