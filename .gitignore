@@ -14,3 +14,4 @@ out_prog
 !*.qip
 !*.ppf
 !*.v
+!**/quartus_files/ip
