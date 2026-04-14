@@ -1,11 +1,11 @@
 PROJECT_ROOT:=$(abspath .)
 export PROJECT_ROOT
 
-TASK_NAME?=fp16pipe
-TASK_NUM?=07
+TASK_NAME?=cpu
+TASK_NUM?=08
 
 TASK_FULL_NAME?=$(TASK_NUM)_$(TASK_NAME)
-TB_NAME?=fp16add_pipe_tb
+TB_NAME?=system_top_tb
 DEFINES_RAW?=
 RAND_SEED?=25
 
@@ -64,7 +64,7 @@ DEFINES:=$(addprefix -D,$(DEFINES_RAW))
 # VERILATOR
 
 VERILATOR_LINT_OPTS:= --lint-only --Wall \
-					  --Wno-unoptflat --Wno-procassinit --Wno-unusedsignal --Wno-unusedparam\
+					  --Wno-procassinit --Wno-unusedsignal --Wno-unusedparam\
 					  --timing --sv --timescale 1ns/1ps $(INCDIR_BASIC_OPT) --top $(TB_NAME)\
 					  -D__ICARUS__
 
