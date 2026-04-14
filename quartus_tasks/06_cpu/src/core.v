@@ -151,6 +151,8 @@ wire lsu_wren_clean;
 assign lsu_wren_clean = lsu_wren & reset_done;
 
 lsu lsu_inst(
+    .clk         (clk),
+
     .i_core_addr (alu_res),
     .i_core_data (src_reg2),
     .o_core_data (lsu_data_out),
