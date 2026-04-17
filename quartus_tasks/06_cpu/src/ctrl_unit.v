@@ -92,13 +92,15 @@ always @(*) begin
         end
         `RV_OPCODE_IMM:
         begin
-            o_alu_sel1 = `ALU_SEL1_REG1;
-            o_alu_sel2 = `ALU_SEL2_IMMI;
-            o_alu_op   = {i_funct7[5], i_funct3};
-            o_wrb_sel  = `WRB_SEL_ALURES;
+            o_alu_sel1    = `ALU_SEL1_REG1;
+            o_alu_sel2    = `ALU_SEL2_IMMI;
+            o_alu_op[2:0] = i_funct3;
+            o_wrb_sel     = `WRB_SEL_ALURES;
 
-            //NOTE: in case of shift op ALU is responsible for slicing the
-            //correct part of the IMM-I
+            if (i_funct3 == `RV_FUNCT3_SRLI_SRAI) 
+                o_alu_op[3] = i_funct7[5];
+            else
+                o_alu_op[3] = 1'b0;
         end
         `RV_OPCODE_REG:
         begin

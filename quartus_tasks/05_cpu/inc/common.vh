@@ -13,6 +13,8 @@
 `define RV_OPCODE_IMM    7'b0010011
 `define RV_OPCODE_REG    7'b0110011
 
+`define RV_FUNCT3_SRLI_SRAI 3'b101
+
 // {funct7[5], funct3}
 `define ALU_OP_WIDTH 4
 
