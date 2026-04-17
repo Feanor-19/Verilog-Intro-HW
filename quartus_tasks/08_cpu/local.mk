@@ -1,7 +1,7 @@
 #[asm/c]
-PROG_TYPE?=asm
+PROG_TYPE?=c
 
-PROG_NAME?=fib
+PROG_NAME?=fibc
 
 IMEM_WORDS_CNT?=256
 # ---------------------------------

@@ -20,8 +20,8 @@ module rf_2r1w_byp #(
 reg [DATA_WIDTH-1:0] r[REG_NUM];
 wire bypass1, bypass2;
 
-assign bypass1 = (i_rd1_addr == i_wr_addr);
-assign bypass2 = (i_rd2_addr == i_wr_addr);
+assign bypass1 = i_wr_en & (i_rd1_addr == i_wr_addr);
+assign bypass2 = i_wr_en & (i_rd2_addr == i_wr_addr);
 
 assign o_rd1_data = (i_rd1_addr != 0) ? (bypass1 ? i_wr_data : r[i_rd1_addr]) : 32'h0;
 assign o_rd2_data = (i_rd2_addr != 0) ? (bypass2 ? i_wr_data : r[i_rd2_addr]) : 32'h0;

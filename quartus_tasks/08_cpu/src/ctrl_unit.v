@@ -50,31 +50,22 @@ always @(*) begin
             o_alu_op   = `ALU_OP_ADD;
             o_wrb_sel  = `WRB_SEL_ALURES;
         end
-        `RV_OPCODE_JAL: //!
+        `RV_OPCODE_JAL:
         begin
             o_jump        = 1'b1;
-            // o_alu_sel1 = `ALU_SEL1_IMMJ;
-            // o_alu_sel2 = `ALU_SEL2_PC; 
-            // o_alu_op   = `ALU_OP_ADD;
             o_pc_next_sel = `PC_NEXT_JAL;
             o_wrb_sel     = `WRB_SEL_PCINC;
         end
-        `RV_OPCODE_JALR: //!
+        `RV_OPCODE_JALR:
         begin
             o_jump        = 1'b1;
-            // o_alu_sel1 = `ALU_SEL1_REG1;
-            // o_alu_sel2 = `ALU_SEL2_IMMI; 
-            // o_alu_op   = `ALU_OP_ADD;
             o_pc_next_sel = `PC_NEXT_JALR;
             o_wrb_sel     = `WRB_SEL_PCINC;
         end
-        `RV_OPCODE_BRANCH: //!
+        `RV_OPCODE_BRANCH:
         begin
             o_cmp_op      = i_funct3;
             o_branch      = 1'b1;
-            // o_alu_sel1 = `ALU_SEL1_IMMB;
-            // o_alu_sel2 = `ALU_SEL2_PC; 
-            // o_alu_op   = `ALU_OP_ADD;
             o_pc_next_sel = `PC_NEXT_BRAN; 
             o_rf_wren     = 1'b0;
         end
@@ -93,10 +84,15 @@ always @(*) begin
         end
         `RV_OPCODE_IMM:
         begin
-            o_alu_sel1 = `ALU_SEL1_REG1;
-            o_alu_sel2 = `ALU_SEL2_IMMI;
-            o_alu_op   = {i_funct7[5], i_funct3};
-            o_wrb_sel  = `WRB_SEL_ALURES;
+            o_alu_sel1    = `ALU_SEL1_REG1;
+            o_alu_sel2    = `ALU_SEL2_IMMI;
+            o_alu_op[2:0] = i_funct3;
+            o_wrb_sel     = `WRB_SEL_ALURES;
+
+            if (i_funct3 == `RV_FUNCT3_SRLI_SRAI) 
+                o_alu_op[3] = i_funct7[5];
+            else
+                o_alu_op[3] = 1'b0;
 
             //NOTE: in case of shift op ALU is responsible for slicing the
             //correct part of the IMM-I

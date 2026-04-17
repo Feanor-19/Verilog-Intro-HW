@@ -13,6 +13,8 @@
 `define RV_OPCODE_IMM    7'b0010011
 `define RV_OPCODE_REG    7'b0110011
 
+`define RV_FUNCT3_SRLI_SRAI 3'b101
+
 // {funct7[5], funct3}
 `define ALU_OP_WIDTH 4
 
@@ -38,12 +40,10 @@
 `define CMP_OP_BGEU 3'b111
 
 
-`define ALU_SEL1_WIDTH 2
+`define ALU_SEL1_WIDTH 1
 
-`define ALU_SEL1_IMMU 2'b00
-`define ALU_SEL1_IMMB 2'b01
-`define ALU_SEL1_IMMJ 2'b10
-`define ALU_SEL1_REG1 2'b11
+`define ALU_SEL1_IMMU 1'b0
+`define ALU_SEL1_REG1 1'b1
 
 
 `define ALU_SEL2_WIDTH 2

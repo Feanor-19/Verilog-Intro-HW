@@ -2,7 +2,7 @@ PROJECT_ROOT:=$(abspath .)
 export PROJECT_ROOT
 
 TASK_NAME?=cpu
-TASK_NUM?=08
+TASK_NUM?=06
 
 TASK_FULL_NAME?=$(TASK_NUM)_$(TASK_NAME)
 TB_NAME?=system_top_tb

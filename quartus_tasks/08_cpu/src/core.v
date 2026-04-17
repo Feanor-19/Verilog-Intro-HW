@@ -104,8 +104,6 @@ ctrl_unit ctrl_unit_inst (
 always @(*) begin
     case (alu_sel1_s0)
         `ALU_SEL1_IMMU: alu_a_s0 = imm_u_s0;
-        `ALU_SEL1_IMMB: alu_a_s0 = imm_b_s0;
-        `ALU_SEL1_IMMJ: alu_a_s0 = imm_j_s0;
         `ALU_SEL1_REG1: alu_a_s0 = src_reg1_s0;
         default:        alu_a_s0 = 32'bx;
     endcase
