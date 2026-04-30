@@ -31,8 +31,8 @@ module ctrl_unit (
     input  wire                          i_prev_branch_taken 
 );
 
-assign o_bypass_sel1_s1 = i_rf_wren_s2 & (i_rd_s2 == i_rs1_s1);
-assign o_bypass_sel2_s1 = i_rf_wren_s2 & (i_rd_s2 == i_rs2_s1); 
+assign o_bypass_sel1_s1 = i_rf_wren_s2 & (i_rd_s2 == i_rs1_s1) & (i_rs1_s1 != '0);
+assign o_bypass_sel2_s1 = i_rf_wren_s2 & (i_rd_s2 == i_rs2_s1) & (i_rs2_s1 != '0); 
 
 reg  branch;
 reg  jump;
