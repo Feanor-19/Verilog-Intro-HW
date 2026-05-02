@@ -8,6 +8,7 @@ SECTIONS
 
     .text :
     {
-        *(.text)
+        *(.text .text.*)
+        *(.text.startup .text.startup.*)
     }
 }
