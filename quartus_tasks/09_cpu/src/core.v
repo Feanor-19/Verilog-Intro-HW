@@ -167,7 +167,7 @@ always @(posedge clk) begin
     imm_u_s1   <= imm_u_s0;
     imm_j_s1   <= imm_j_s0;
 
-    prev_branch_taken_s1 <= branch_taken_s1;
+    prev_branch_taken_s1 <= branch_taken_s1 & reset_done_s0;
 
     src_reg1_s1 <= src_reg1_s0;
     src_reg2_s1 <= src_reg2_s0;
@@ -296,7 +296,7 @@ lsu lsu_inst (
 
 always @(posedge clk) begin
     rd_s2      <= rd_s1;
-    rf_wren_s2 <= rf_wren_s1;
+    rf_wren_s2 <= rf_wren_s1 & reset_done_s1;
 
     imm_u_s2   <= imm_u_s1;
     alu_res_s2 <= alu_res_s1;
